@@ -4,21 +4,13 @@ use std::{
 };
 
 pub fn lucky_with_base(n: u32, base: u32) -> u32 {
+    assert!(base > 1);
     let sums = calc_sums(n, base);
     sums.values().map(|x| x.mul(x)).sum()
 }
 
 pub fn lucky(n: u32) -> u32 {
     lucky_with_base(n, 10)
-}
-
-fn digits_sum(x: u32) -> u32 {
-    if x < 10 {
-        return x;
-    }
-    let remain = x / 10;
-    let last_digit = x - remain * 10;
-    last_digit + digits_sum(remain)
 }
 
 fn calc_sums(n: u32, base: u32) -> HashMap<u32, u32> {
@@ -40,7 +32,7 @@ fn digits_sum_with_base(x: u32, base: u32) -> u32 {
     }
     let remain = x / base;
     let last_digit = x - remain * base;
-    last_digit + digits_sum(remain)
+    last_digit + digits_sum_with_base(remain, base)
 }
 
 #[cfg(test)]
@@ -61,16 +53,25 @@ mod tests {
 
     #[test]
     fn test_digits_sum() {
-        assert_eq!(0, digits_sum(0));
-        assert_eq!(7, digits_sum(7));
-        assert_eq!(6, digits_sum(42));
-        assert_eq!(1, digits_sum(100));
-        assert_eq!(28, digits_sum(7777));
+        assert_eq!(0, digits_sum_with_base(0, 2));
+        assert_eq!(7, digits_sum_with_base(7, 8));
+        assert_eq!(6, digits_sum_with_base(42, 10));
+        assert_eq!(1, digits_sum_with_base(100, 10));
+        assert_eq!(28, digits_sum_with_base(7777, 10));
     }
 
     #[test]
     fn test_lucky_with_base() {
         assert_eq!(55_252, lucky_with_base(3, 10));
         assert_eq!(4_816_030, lucky_with_base(4, 10));
+        let result_bin = dbg!(lucky_with_base(3, 2));
+        assert_eq!(20, result_bin);
+        let _result_oct = dbg!(lucky_with_base(3, 8)); // 18_152?
+        let _result_hex = dbg!(lucky_with_base(3, 16)); //577_744?
+    }
+
+    #[test]
+    fn debug() {
+        dbg!(lucky_with_base(3, 2));
     }
 }
