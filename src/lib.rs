@@ -18,10 +18,7 @@ fn calc_sums(n: u32, base: u32) -> HashMap<u32, u32> {
     let max_number = base.pow(n);
     for x in 0..max_number {
         let sum = digits_sum_with_base(x, base);
-        match sums.entry(sum) {
-            Entry::Occupied(mut exist) => exist.get_mut().add_assign(1_u32),
-            Entry::Vacant(vacant) => vacant.insert(0_u32).add_assign(1_u32),
-        }
+        aquire_sum(&mut sums, sum);
     }
     sums
 }
@@ -33,6 +30,13 @@ fn digits_sum_with_base(x: u32, base: u32) -> u32 {
     let remain = x / base;
     let last_digit = x - remain * base;
     last_digit + digits_sum_with_base(remain, base)
+}
+
+fn aquire_sum(sums: &mut HashMap<u32, u32>, sum: u32) {
+    match sums.entry(sum) {
+        Entry::Occupied(mut exist) => exist.get_mut().add_assign(1_u32),
+        Entry::Vacant(vacant) => vacant.insert(0_u32).add_assign(1_u32),
+    }
 }
 
 #[cfg(test)]
@@ -57,7 +61,13 @@ mod tests {
         assert_eq!(7, digits_sum_with_base(7, 8));
         assert_eq!(6, digits_sum_with_base(42, 10));
         assert_eq!(1, digits_sum_with_base(100, 10));
+        assert_eq!(1, digits_sum_with_base(0b100, 2));
+        assert_eq!(1, digits_sum_with_base(0o100, 8));
+        assert_eq!(1, digits_sum_with_base(0x100, 16));
         assert_eq!(28, digits_sum_with_base(7777, 10));
+        assert_eq!(28, digits_sum_with_base(0o7777, 8));
+        assert_eq!(28, digits_sum_with_base(0x7777, 16));
+        assert_eq!(33, digits_sum_with_base(0xABC, 16));
     }
 
     #[test]
