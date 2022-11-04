@@ -1,8 +1,9 @@
 use std::{
     collections::{hash_map::Entry, HashMap},
-    ops::{AddAssign},
-    time::Instant,
+    ops::AddAssign,
 };
+
+mod tester;
 
 pub fn lucky_with_base(n: u8, base: u8) -> u64 {
     assert!(base > 1);
@@ -92,16 +93,10 @@ mod tests {
     #[test]
     fn test_tickets_problem() {
         println!("{}", include_str!("1.Tickets/problem.txt"));
-        let mut i = 0;
-        while let Ok(str_n) = std::fs::read_to_string(dbg!(format!("src/1.Tickets/test.{i}.in"))) {
-            let start = Instant::now();
-            let n = str_n.parse::<u8>().unwrap();
-            let str_answer = std::fs::read_to_string(format!("src/1.Tickets/test.{i}.out")).unwrap();
-            let str_answer = str_answer.trim();
-            assert_eq!(str_answer.parse::<u64>().unwrap(), lucky(n));
-            i += 1;
-            let _ = dbg!(Instant::now().duration_since(start));
-        }
-        assert_eq!(10, i);
+        tester::run_test("src/1.Tickets", |input_data|{
+            let half_number_of_digits = input_data.first().unwrap().parse::<u8>().unwrap();
+            let number_of_lucky_tickets = lucky(half_number_of_digits);
+            format!("{}", number_of_lucky_tickets)
+        });
     }
 }
